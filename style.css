@@ -1,0 +1,258 @@
+:root {
+    --bg-color: #f8f9fa;
+    --text-color: #212529;
+    --primary-color: #4361ee;
+    --secondary-color: #3f37c9;
+    --accent-color: #4cc9f0;
+    --border-color: #dee2e6;
+    --editor-bg: #ffffff;
+    --font-main: 'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-main);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+header h1 {
+    font-size: 2rem;
+    color: var(--primary-color);
+}
+
+.controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.tabs {
+    display: flex;
+    gap: 5px;
+    background: #e9ecef;
+    padding: 5px;
+    border-radius: 8px;
+}
+
+.tab-btn {
+    padding: 8px 16px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-weight: 600;
+    border-radius: 6px;
+    transition: all 0.2s;
+    font-family: var(--font-main);
+}
+
+.tab-btn.active {
+    background: white;
+    color: var(--primary-color);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.actions button {
+    padding: 8px 16px;
+    border: 1px solid var(--border-color);
+    background: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.actions button:hover {
+    background: #f1f3f5;
+    border-color: #adb5bd;
+}
+
+#auto-rhyme-btn {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+}
+
+#auto-rhyme-btn:hover {
+    background-color: var(--secondary-color);
+}
+
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Ważne dla scrollowania wewnątrz edytora */
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border: 1px solid var(--border-color);
+}
+
+.tab-content {
+    display: none;
+    height: 100%;
+    flex-direction: column;
+}
+
+.tab-content.active {
+    display: flex;
+}
+
+/* Editor Styles */
+.editor-container {
+    display: flex;
+    height: 100%;
+    font-family: var(--font-mono);
+    font-size: 16px;
+}
+
+.line-numbers, .syllable-counts {
+    padding: 15px 10px;
+    background: #f8f9fa;
+    color: #adb5bd;
+    text-align: right;
+    user-select: none;
+    line-height: 1.5; /* Musi pasować do textarea */
+    overflow: hidden;
+}
+
+.line-numbers {
+    border-right: 1px solid var(--border-color);
+    min-width: 40px;
+}
+
+.syllable-counts {
+    border-left: 1px solid var(--border-color);
+    min-width: 50px;
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+textarea {
+    flex: 1;
+    border: none;
+    padding: 15px;
+    resize: none;
+    outline: none;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: 1.5;
+    white-space: pre;
+    overflow-y: scroll; /* Zawsze pokazuj scrollbar, żeby synchronizacja działała */
+}
+
+/* Paint Styles */
+.toolbar {
+    padding: 10px 15px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: #f8f9fa;
+}
+
+.color-palette {
+    display: flex;
+    gap: 5px;
+}
+
+.color-swatch {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: transform 0.1s;
+}
+
+.color-swatch:hover {
+    transform: scale(1.1);
+}
+
+.color-swatch.selected {
+    border-color: #212529;
+    transform: scale(1.1);
+}
+
+.paint-canvas {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    font-family: var(--font-mono);
+    font-size: 16px;
+    line-height: 1.8;
+}
+
+.paint-line {
+    margin-bottom: 4px;
+    min-height: 1.8em;
+}
+
+.paint-word {
+    cursor: pointer;
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+    display: inline-block;
+}
+
+.paint-word:hover {
+    background-color: rgba(0,0,0,0.05);
+}
+
+/* Footer Stats */
+footer {
+    margin-top: 15px;
+    padding: 10px;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.stats {
+    display: flex;
+    gap: 20px;
+}
+
+/* Checkbox */
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 0.9rem;
+    user-select: none;
+}
+
+.checkbox-container input {
+    margin-right: 8px;
+}
