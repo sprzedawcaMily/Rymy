@@ -242,53 +242,60 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function getRhymePart(word, precision = 'smart') {
-        word = cleanWord(word);
-        if (word.length < 2) return word;
+        let clean = cleanWord(word);
+        if (clean.length < 2) return clean;
 
-        // Dla rymów dokładnych: bierzemy ostatnie samogłoski i spółgłoski od ostatniej akcentowanej
-        // W PL akcent pada zwykle na przedostatnią sylabę.
-        
-        const vowels = ['a', 'ą', 'e', 'ę', 'i', 'o', 'ó', 'u', 'y'];
+        // 1. Normalizacja wstępna (ó->u, rz->ż, ch->h)
+        // Robimy to na całym słowie, żeby poprawnie znaleźć samogłoski (ó jest samogłoską)
+        let phonetic = clean
+            .replace(/ó/g, 'u')
+            .replace(/ch/g, 'h')
+            .replace(/rz/g, 'ż');
+
+        const vowels = ['a', 'ą', 'e', 'ę', 'i', 'o', 'u', 'y']; // ó zamienione na u
         let vowelIndices = [];
-        for (let i = 0; i < word.length; i++) {
-            if (vowels.includes(word[i])) {
+        for (let i = 0; i < phonetic.length; i++) {
+            if (vowels.includes(phonetic[i])) {
                 vowelIndices.push(i);
             }
         }
 
-        if (vowelIndices.length < 1) return word; // Brak samogłosek
+        if (vowelIndices.length === 0) return clean;
 
-        // Jeśli słowo jednosylabowe, bierzemy całe (lub od samogłoski)
-        if (vowelIndices.length === 1) {
-            return word.substring(vowelIndices[0]); 
-        }
+        // Akcent: przedostatnia sylaba
+        let startIndex = vowelIndices.length > 1 ? vowelIndices[vowelIndices.length - 2] : vowelIndices[0];
+        let suffix = phonetic.substring(startIndex);
 
-        // Standardowo: od przedostatniej samogłoski
-        const penultVowelIndex = vowelIndices[vowelIndices.length - 2];
+        if (precision === 'loose') {
+            // Tylko samogłoski (Asonans)
+            return suffix.split('').filter(c => vowels.includes(c)).join('');
+        } 
         
+        // Dla Perfect i Smart normalizujemy spółgłoski (ubezdźwięcznienie)
+        // b->p, d->t, g->k, w->f, z->s, ż->sz, ź->ś, dż->cz, dź->ć
+        const voicedToUnvoiced = {
+            'b': 'p', 'd': 't', 'g': 'k', 'w': 'f', 'z': 's', 'ż': 'sz', 'ź': 'ś'
+        };
+        
+        // Prosta normalizacja znak po znaku
+        let normalizedSuffix = suffix.split('').map(c => voicedToUnvoiced[c] || c).join('');
+
         if (precision === 'perfect') {
-            // Rymy dokładne: cały sufiks od przedostatniej samogłoski
-            return word.substring(penultVowelIndex);
-        } else {
-            // Rymy niedokładne (asonanse)
-            let suffix = word.substring(penultVowelIndex);
-            let rhymeSignature = "";
-            for(let char of suffix) {
-                if (vowels.includes(char)) {
-                    rhymeSignature += char;
-                }
-            }
-
-            if (precision === 'smart') {
-                // Smart: Asonans + Ostatnia litera
-                // To pozwala odróżnić "jesteś" (kończy się na ś) od "gangsterem" (kończy się na m)
-                // Ale łączy "morde" (e) i "kolbe" (e)
-                const lastChar = word[word.length - 1];
-                rhymeSignature += `_${lastChar}`;
-            }
-
-            return rhymeSignature;
+            return normalizedSuffix;
         }
+
+        // Smart: Samogłoski + Ostatnia spółgłoska (znormalizowana)
+        if (precision === 'smart') {
+            const suffixVowels = normalizedSuffix.split('').filter(c => vowels.includes(c)).join('');
+            const lastChar = normalizedSuffix[normalizedSuffix.length - 1];
+            
+            // Sygnatura: samogłoski + ostatni znak
+            // To pozwala odróżnić "jesteś" (e-e + ś) od "gangsterem" (e-e + m)
+            // Ale łączy "chleb" (e + p) i "sklep" (e + p)
+            return suffixVowels + '_' + lastChar;
+        }
+        
+        return suffix;
     }
 
     function detectRhymes() {
