@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const autoRhymeBtn = document.getElementById('auto-rhyme-btn');
     const copyBtn = document.getElementById('copy-btn');
     const clearBtn = document.getElementById('clear-btn');
-    const imperfectRhymesCheck = document.getElementById('imperfect-rhymes-check');
+    const rhymePrecisionSelect = document.getElementById('rhyme-precision');
     
     // Statystyki
     const statLines = document.getElementById('stat-lines');
@@ -241,13 +241,12 @@ document.addEventListener('DOMContentLoaded', () => {
         return word.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"");
     }
 
-    function getRhymePart(word, imperfect = false) {
+    function getRhymePart(word, precision = 'smart') {
         word = cleanWord(word);
         if (word.length < 2) return word;
 
         // Dla rymów dokładnych: bierzemy ostatnie samogłoski i spółgłoski od ostatniej akcentowanej
         // W PL akcent pada zwykle na przedostatnią sylabę.
-        // Uproszczenie: weźmy wszystko od przedostatniej samogłoski.
         
         const vowels = ['a', 'ą', 'e', 'ę', 'i', 'o', 'ó', 'u', 'y'];
         let vowelIndices = [];
@@ -267,9 +266,11 @@ document.addEventListener('DOMContentLoaded', () => {
         // Standardowo: od przedostatniej samogłoski
         const penultVowelIndex = vowelIndices[vowelIndices.length - 2];
         
-        if (imperfect) {
-            // Rymy niedokładne (asonanse): interesują nas tylko samogłoski od akcentu
-            // Np. "krowa" -> "o-a", "mowa" -> "o-a", "woda" -> "o-a" (to się rymuje niedokładnie)
+        if (precision === 'perfect') {
+            // Rymy dokładne: cały sufiks od przedostatniej samogłoski
+            return word.substring(penultVowelIndex);
+        } else {
+            // Rymy niedokładne (asonanse)
             let suffix = word.substring(penultVowelIndex);
             let rhymeSignature = "";
             for(let char of suffix) {
@@ -277,10 +278,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     rhymeSignature += char;
                 }
             }
+
+            if (precision === 'smart') {
+                // Smart: Asonans + Ostatnia litera
+                // To pozwala odróżnić "jesteś" (kończy się na ś) od "gangsterem" (kończy się na m)
+                // Ale łączy "morde" (e) i "kolbe" (e)
+                const lastChar = word[word.length - 1];
+                rhymeSignature += `_${lastChar}`;
+            }
+
             return rhymeSignature;
-        } else {
-            // Rymy dokładne: cały sufiks od przedostatniej samogłoski
-            return word.substring(penultVowelIndex);
         }
     }
 
@@ -288,6 +295,7 @@ document.addEventListener('DOMContentLoaded', () => {
         wordColors.clear();
         const lines = currentText.split('\n');
         const allWords = []; // { text, id, rhymePart }
+        const precision = rhymePrecisionSelect.value;
 
         // 1. Znajdź WSZYSTKIE słowa w tekście
         lines.forEach((line, lineIndex) => {
@@ -300,14 +308,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const clean = cleanWord(token);
                 // Filtrujemy bardzo krótkie słowa, żeby uniknąć szumu (np. "w", "z", "no", "to")
-                // chyba że użytkownik będzie chciał inaczej, ale dla czytelności lepiej dać limit.
                 if (clean.length < 3) return;
 
-                const isImperfect = imperfectRhymesCheck.checked;
                 allWords.push({
                     text: token,
                     id: `${lineIndex}-${tokenIndex}`,
-                    rhymePart: getRhymePart(token, isImperfect)
+                    rhymePart: getRhymePart(token, precision)
                 });
             });
         });

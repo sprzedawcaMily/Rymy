@@ -342,7 +342,35 @@ textarea {
     opacity: 0.5;
 }
 
-/* Checkbox */
+/* Checkbox & Select */
+.control-group {
+    margin-top: 15px;
+}
+
+.control-label {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+}
+
+.select-input {
+    width: 100%;
+    padding: 8px 12px;
+    background: #1e293b;
+    border: 1px solid var(--panel-border);
+    border-radius: 8px;
+    color: var(--text-main);
+    font-family: var(--font-main);
+    font-size: 0.9rem;
+    outline: none;
+    cursor: pointer;
+}
+
+.select-input:focus {
+    border-color: var(--primary-color);
+}
+
 .checkbox-container {
     display: flex;
     align-items: center;

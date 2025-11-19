@@ -70,11 +70,14 @@
                     <button id="auto-rhyme-btn" class="btn-primary full-width">🤖 Auto-Rymy</button>
                     <button id="copy-btn" class="btn-secondary full-width">📋 Kopiuj Tekst</button>
                     
-                    <label class="checkbox-container">
-                        <input type="checkbox" id="imperfect-rhymes-check" checked>
-                        <span class="checkmark"></span>
-                        Szukaj rymów niedokładnych
-                    </label>
+                    <div class="control-group">
+                        <label for="rhyme-precision" class="control-label">Dokładność rymów:</label>
+                        <select id="rhyme-precision" class="select-input">
+                            <option value="perfect">Dokładne</option>
+                            <option value="smart" selected>Niedokładne (Smart)</option>
+                            <option value="loose">Luźne (Asonanse)</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="sidebar-panel help-panel">
