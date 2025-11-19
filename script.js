@@ -287,37 +287,34 @@ document.addEventListener('DOMContentLoaded', () => {
     function detectRhymes() {
         wordColors.clear();
         const lines = currentText.split('\n');
-        const lastWords = []; // { word, lineIndex, wordIndex, rhymePart }
+        const allWords = []; // { text, id, rhymePart }
 
-        // 1. Znajdź ostatnie słowa w każdej linii
+        // 1. Znajdź WSZYSTKIE słowa w tekście
         lines.forEach((line, lineIndex) => {
             // Używamy tej samej logiki podziału co w renderPaintArea, aby ID się zgadzały
             const tokens = line.split(/(\s+)/);
-            let foundIndex = -1;
-            let lastWordText = "";
+            
+            tokens.forEach((token, tokenIndex) => {
+                // Pomiń spacje i puste znaki
+                if (token.trim().length === 0) return;
 
-            // Szukamy ostatniego tokena, który jest słowem (nie spacją)
-            for (let i = tokens.length - 1; i >= 0; i--) {
-                if (tokens[i].trim().length > 0) {
-                    foundIndex = i;
-                    lastWordText = tokens[i];
-                    break;
-                }
-            }
+                const clean = cleanWord(token);
+                // Filtrujemy bardzo krótkie słowa, żeby uniknąć szumu (np. "w", "z", "no", "to")
+                // chyba że użytkownik będzie chciał inaczej, ale dla czytelności lepiej dać limit.
+                if (clean.length < 3) return;
 
-            if (foundIndex !== -1) {
                 const isImperfect = imperfectRhymesCheck.checked;
-                lastWords.push({
-                    text: lastWordText,
-                    id: `${lineIndex}-${foundIndex}`,
-                    rhymePart: getRhymePart(lastWordText, isImperfect)
+                allWords.push({
+                    text: token,
+                    id: `${lineIndex}-${tokenIndex}`,
+                    rhymePart: getRhymePart(token, isImperfect)
                 });
-            }
+            });
         });
 
         // 2. Grupuj rymy
         const rhymeGroups = {};
-        lastWords.forEach(item => {
+        allWords.forEach(item => {
             if (!rhymeGroups[item.rhymePart]) {
                 rhymeGroups[item.rhymePart] = [];
             }
@@ -326,7 +323,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 3. Przypisz kolory
         let colorIndex = 0;
-        Object.values(rhymeGroups).forEach(group => {
+        // Sortujemy grupy po długości (najpierw te z największą liczbą rymów), żeby kolory były stabilne
+        const sortedGroups = Object.values(rhymeGroups).sort((a, b) => b.length - a.length);
+
+        sortedGroups.forEach(group => {
             if (group.length > 1) { // Tylko jeśli coś się z czymś rymuje
                 const color = colors[colorIndex % colors.length];
                 group.forEach(item => {
