@@ -3,65 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rymownik - Edytor i Analizator Rymów</title>
+    <title>Rhyme Flow Pro</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
+    <div class="app-container">
         <header>
-            <h1>🎤 Rymownik</h1>
-            <p>Pisz, licz sylaby i maluj rymy.</p>
+            <div class="logo-section">
+                <div class="logo-icon">🎤</div>
+                <div>
+                    <h1>RHYME FLOW PRO</h1>
+                    <p>Analizator schematów rymów</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button id="save-img-btn" class="btn-secondary">📷 Zapisz obraz</button>
+                <button id="clear-btn" class="btn-danger" title="Wyczyść">🗑️</button>
+            </div>
         </header>
 
-        <div class="controls">
-            <div class="tabs">
-                <button class="tab-btn active" data-tab="edit">📝 Edycja</button>
-                <button class="tab-btn" data-tab="paint">🎨 Malowanie</button>
-            </div>
-            <div class="actions">
-                <button id="auto-rhyme-btn" title="Wykryj rymy automatycznie">🤖 Auto-Rymy</button>
-                <button id="copy-btn" title="Skopiuj tekst i statystyki">📋 Kopiuj</button>
-                <button id="clear-btn" title="Wyczyść wszystko">🗑️ Wyczyść</button>
-            </div>
-        </div>
-
         <main>
-            <!-- Zakładka Edycji -->
-            <div id="edit-tab" class="tab-content active">
-                <div class="editor-container">
-                    <div class="line-numbers" id="line-numbers">1</div>
-                    <textarea id="text-input" placeholder="Wpisz tutaj swój tekst...&#10;Każdy wers w nowej linii.&#10;Aplikacja policzy sylaby automatycznie."></textarea>
-                    <div class="syllable-counts" id="syllable-counts">0</div>
+            <div class="main-content">
+                <div class="controls-bar">
+                    <div class="tabs">
+                        <button class="tab-btn active" data-tab="edit">⌨️ EDYCJA</button>
+                        <button class="tab-btn" data-tab="paint">🖌️ MALOWANIE</button>
+                    </div>
+                    <div class="status-msg" id="status-msg">
+                        Wpisz tekst &rarr; Przełącz na Malowanie
+                    </div>
+                </div>
+
+                <div class="editor-wrapper">
+                    <!-- Zakładka Edycji -->
+                    <div id="edit-tab" class="tab-content active">
+                        <div class="line-numbers" id="line-numbers">1</div>
+                        <textarea id="text-input" placeholder="Wpisz tutaj swój tekst...&#10;Każdy wers w nowej linii."></textarea>
+                        <div class="syllable-counts" id="syllable-counts">0</div>
+                    </div>
+
+                    <!-- Zakładka Malowania -->
+                    <div id="paint-tab" class="tab-content">
+                        <div id="paint-area" class="paint-canvas"></div>
+                    </div>
+                </div>
+                
+                <div class="footer-stats">
+                    <span id="stat-lines">Wersy: 0</span>
+                    <span class="separator">|</span>
+                    <span id="stat-syllables">Sylaby (suma): 0</span>
+                    <span class="ai-badge">🤖 Wygenerowane przez AI</span>
                 </div>
             </div>
 
-            <!-- Zakładka Malowania -->
-            <div id="paint-tab" class="tab-content">
-                <div class="toolbar">
-                    <span>Wybierz kolor:</span>
-                    <div class="color-palette" id="color-palette">
+            <aside class="sidebar">
+                <div class="sidebar-panel">
+                    <h3>PALETA</h3>
+                    <div class="color-grid" id="color-palette">
                         <!-- Kolory generowane przez JS -->
                     </div>
+                    <p class="hint-text">Kliknij, by wybrać kolor</p>
+                </div>
+
+                <div class="sidebar-panel actions-panel">
+                    <button id="auto-rhyme-btn" class="btn-primary full-width">🤖 Auto-Rymy</button>
+                    <button id="copy-btn" class="btn-secondary full-width">📋 Kopiuj Tekst</button>
+                    
                     <label class="checkbox-container">
                         <input type="checkbox" id="imperfect-rhymes-check" checked>
                         <span class="checkmark"></span>
                         Szukaj rymów niedokładnych
                     </label>
                 </div>
-                <div id="paint-area" class="paint-canvas">
-                    <!-- Tutaj pojawi się tekst do malowania -->
-                </div>
-            </div>
-        </main>
 
-        <footer>
-            <div class="stats">
-                <span id="stat-lines">Wersy: 0</span>
-                <span id="stat-words">Słowa: 0</span>
-                <span id="stat-syllables">Sylaby (suma): 0</span>
-            </div>
-        </footer>
+                <div class="sidebar-panel help-panel">
+                    <h3>JAK UŻYWAĆ?</h3>
+                    <ul>
+                        <li>Wpisz tekst w trybie <strong>Edycja</strong></li>
+                        <li>Wybierz kolor w trybie <strong>Malowanie</strong></li>
+                        <li>Klikaj słowa, by zaznaczać rymy</li>
+                        <li>Kliknij ponownie, by usunąć</li>
+                    </ul>
+                </div>
+            </aside>
+        </main>
     </div>
 
     <script src="script.js"></script>

@@ -20,10 +20,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Stan Aplikacji ---
     let currentText = "";
     let selectedColor = null;
+    // Nowe kolory z palety (żywe, neonowe)
     const colors = [
-        '#ffadad', '#ffd6a5', '#fdffb6', '#caffbf', 
-        '#9bf6ff', '#a0c4ff', '#bdb2ff', '#ffc6ff', 
-        '#e5e5e5', '#f4a261', '#2a9d8f', '#e9c46a'
+        '#ef4444', // Czerwony
+        '#3b82f6', // Niebieski
+        '#22c55e', // Zielony
+        '#a855f7', // Fioletowy
+        '#eab308', // Żółty
+        '#ec4899', // Różowy
+        '#f97316', // Pomarańczowy
+        '#06b6d4'  // Cyjan
     ];
     
     // Mapa słowo -> kolor (dla malowania)
@@ -100,6 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Funkcje Logiki ---
 
     function initPalette() {
+        colorPalette.innerHTML = ''; // Wyczyść poprzednie
         colors.forEach((color, index) => {
             const swatch = document.createElement('div');
             swatch.classList.add('color-swatch');
@@ -135,7 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const syllables = currentText.split('\n').reduce((acc, line) => acc + countSyllables(line), 0);
 
         statLines.innerText = `Wersy: ${lines}`;
-        statWords.innerText = `Słowa: ${words}`;
+        // statWords.innerText = `Słowa: ${words}`; // Usunięte z nowego UI
         statSyllables.innerText = `Sylaby (suma): ${syllables}`;
     }
 
@@ -284,31 +291,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 1. Znajdź ostatnie słowa w każdej linii
         lines.forEach((line, lineIndex) => {
-            const words = line.trim().split(/\s+/);
-            if (words.length > 0 && words[0] !== "") {
-                const lastWord = words[words.length - 1];
-                // Musimy znaleźć dokładny indeks tego słowa w oryginalnym podziale na tokeny w renderPaintArea
-                // To jest trochę trudne bo split(/\s+/) gubi spacje, a tam mamy split(/(\s+)/)
-                // Uprośćmy: znajdźmy to słowo w strukturze renderowania po prostu biorąc ostatni token niebędący spacją
-                
-                // Symulacja tokenizacji z renderPaintArea
-                const tokens = line.split(/(\s+)/);
-                let foundIndex = -1;
-                for (let i = tokens.length - 1; i >= 0; i--) {
-                    if (tokens[i].trim().length > 0) {
-                        foundIndex = i;
-                        break;
-                    }
-                }
+            // Używamy tej samej logiki podziału co w renderPaintArea, aby ID się zgadzały
+            const tokens = line.split(/(\s+)/);
+            let foundIndex = -1;
+            let lastWordText = "";
 
-                if (foundIndex !== -1) {
-                    const isImperfect = imperfectRhymesCheck.checked;
-                    lastWords.push({
-                        text: lastWord,
-                        id: `${lineIndex}-${foundIndex}`,
-                        rhymePart: getRhymePart(lastWord, isImperfect)
-                    });
+            // Szukamy ostatniego tokena, który jest słowem (nie spacją)
+            for (let i = tokens.length - 1; i >= 0; i--) {
+                if (tokens[i].trim().length > 0) {
+                    foundIndex = i;
+                    lastWordText = tokens[i];
+                    break;
                 }
+            }
+
+            if (foundIndex !== -1) {
+                const isImperfect = imperfectRhymesCheck.checked;
+                lastWords.push({
+                    text: lastWordText,
+                    id: `${lineIndex}-${foundIndex}`,
+                    rhymePart: getRhymePart(lastWordText, isImperfect)
+                });
             }
         });
 
